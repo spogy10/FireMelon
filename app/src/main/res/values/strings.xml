@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Fire Melon</string>
+    <string name="whatsapp_package_name">com.whatsapp</string>
+    <string name="temp_file_name">newfile.mp3</string>
+</resources>
