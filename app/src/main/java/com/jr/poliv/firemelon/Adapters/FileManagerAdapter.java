@@ -1,5 +1,4 @@
-package com.jr.poliv.firemelon;
-
+package com.jr.poliv.firemelon.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -10,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.jr.poliv.firemelon.MainActivity;
+import com.jr.poliv.firemelon.R;
 import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
@@ -19,20 +20,20 @@ import java.util.ArrayList;
  * Created by poliv on 8/6/2017.
  */
 
-public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
+public class FileManagerAdapter extends RecyclerView.Adapter<FileManagerAdapter.ViewHolder> {
 
-    private CardViewListener cvListener;
+    private FileAdapter.CardViewListener cvListener;
     private ArrayList<File> filesArrayList;
 
 
-    public FileAdapter(Context context, ArrayList<File> filesArrayList) {
+    public FileManagerAdapter(Context context, ArrayList<File> filesArrayList) {
         this.filesArrayList = filesArrayList;
         MainActivity.verifyStoragePermissions((Activity) context);
         try{
-            cvListener = (CardViewListener) context;
+            cvListener = (FileAdapter.CardViewListener) context;
         }catch(ClassCastException e){
             e.printStackTrace();
-            Log.d("Paul", "MainActivity not an instance of CardViewListener. " + e.toString());
+            Log.d("Paul", context.getClass().getName()+" not an instance of CardViewListener. " + e.toString());
         }
 
     }
@@ -45,7 +46,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.bindView(position);
+        holder.bindView(position);
 
     }
 
@@ -69,21 +70,23 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
         private void  bindView(int position){
             File file = filesArrayList.get(position);
-            Picasso.with(itemView.getContext()).load(R.mipmap.dragon_fruit).into(iv);
+            if(file.isFile())
+                Picasso.with(itemView.getContext()).load(R.mipmap.dragon_fruit).into(iv);
+            else {
+                Picasso.with(itemView.getContext()).load(R.mipmap.fire_melon).into(iv);
+                final int finalPosition = position;
+                cv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        cvListener.cardViewListener(finalPosition);
+                    }
+                });
+            }
             tv.setText(file.getName());
-            final int finalPosition = position;
-            cv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cvListener.cardViewListener(finalPosition);
-                }
-            });
         }
     }
 
-    interface CardViewListener{
-        void cardViewListener(int position);
-    }
+
 
 
 }

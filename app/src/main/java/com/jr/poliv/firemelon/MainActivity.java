@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+import com.jr.poliv.firemelon.Adapters.FileAdapter;
+import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Intent intent = new Intent(this, FileManager.class); startActivity(intent);
         permissionCheck();
         if(havePermission && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Log.d("Paul", "external storage state " + Environment.getExternalStorageState());
