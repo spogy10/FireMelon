@@ -1,185 +1,220 @@
 package com.jr.poliv.firemelon;
 
-import android.Manifest;
-import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.Intent;
-import android.content.Loader;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Environment;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.TabLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.jr.poliv.firemelon.Adapters.FileAdapter;
-import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
+public class MainActivity extends AppCompatActivity implements FileAdapter.CardViewListener {
 
-    RecyclerView recycler;
-    FileAdapter adapter;
-    ArrayList<File> filesArrayList = new ArrayList<>();
-    String file_path = File.separator+"storage"+File.separator+"6C58-E107"+File.separator+"vn archive";
-    final File vnArchive = new File(file_path);
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-    boolean havePermission = false;
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
+    private final int VOICE_NOTE_FRAGMENT = 0;
+    private final int FILE_MANAGER_FRAGMENT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Intent intent = new Intent(this, VoiceNoteFragment.class); startActivity(intent);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Intent intent = new Intent(this, FileManager.class); startActivity(intent);
-        permissionCheck();
-        if(havePermission && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Log.d("Paul", "external storage state " + Environment.getExternalStorageState());
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
-            recycler = (RecyclerView) findViewById(R.id.rvFile);
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
-            recycler.setLayoutManager(gridLayoutManager);
-            adapter = new FileAdapter(this, filesArrayList);
-            recycler.setAdapter(adapter);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
-            getLoaderManager().initLoader(0, null, this);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
-        }else{
-            Toast.makeText(this,"NO PERMISSION or MEDIA NOT MOUNTED", Toast.LENGTH_LONG).show();
-        }
-
-    }
-
-
-    void sendToWhatsApp(File file) throws IOException {
-        InputStream stream = new FileInputStream(file);
-        File newFile = new File(Environment.getExternalStorageDirectory().getPath(), getString(R.string.temp_file_name));
-        FileOutputStream out = new FileOutputStream(newFile);
-        byte[] readData = new byte[1024*500];
-        int i = stream.read(readData);
-        while( i != -1){
-            out.write(readData, 0, i);
-            i = stream.read(readData);
-        }
-        out.flush();
-        out.close();
-        stream.close();
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType("audio/mp3");
-        intent.putExtra("FilePath", newFile.getAbsolutePath());
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(newFile.getAbsolutePath()));
-        intent.setPackage(getString(R.string.whatsapp_package_name));
-        Log.d("Paul", getMimeType(Uri.fromFile(file)));
-        startActivityForResult(intent,1);
-        newFile.deleteOnExit();
     }
 
     @Override
-    public void cardViewListener(int position) {
-        Log.d("Paul", String.valueOf(position));
-        try {
-            sendToWhatsApp(filesArrayList.get(position));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-    }
 
-    public String getMimeType(Uri uri) {
-        String mimeType;
+        if(mViewPager.getCurrentItem() == FILE_MANAGER_FRAGMENT)
+            if( ((FileManagerFragment) mSectionsPagerAdapter.fragments[FILE_MANAGER_FRAGMENT]).onKeyDown(keyCode, event) )
+                return true;
 
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
-                    .toString());
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    fileExtension.toLowerCase());
-
-        mimeType = (mimeType == null)? "":mimeType;
-
-        return mimeType;
-    }
-
-    private void permissionCheck(){
-        havePermission = verifyStoragePermissions(this);
-    }
-
-    public static boolean verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-            return false;
-        }
-        return true;
-
+        // If it wasn't the Back key or there's no web page history, bubble up to the default
+        // system behavior (probably exit the activity)
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode){
-            case REQUEST_EXTERNAL_STORAGE:{
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    havePermission = true;
-                }else{
-                    Log.d("Paul", "Permission denied");
-                }
-            }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(grantResults.length > 0){
+            if (mViewPager.getCurrentItem() == FILE_MANAGER_FRAGMENT)
+                ((FileManagerFragment) mSectionsPagerAdapter.fragments[FILE_MANAGER_FRAGMENT]).onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (mViewPager.getCurrentItem() == VOICE_NOTE_FRAGMENT)
+                ((VoiceNoteFragment) mSectionsPagerAdapter.fragments[VOICE_NOTE_FRAGMENT]).onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
+
     @Override
-    public Loader<ArrayList> onCreateLoader(int id, Bundle args) {
-        Loader loader = new FileAsyncTaskLoader(this, vnArchive.listFiles());
-        return loader;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
-        filesArrayList.clear();
-        filesArrayList.addAll(data);
-        adapter.notifyDataSetChanged();
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
 
-    @Override
-    public void onLoaderReset(Loader<ArrayList> loader) {
-        filesArrayList.clear();
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Because app crashes sometimes without the try->catch
-
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), getString(R.string.temp_file_name));
-        try {
-            // if file exists in memory
-            if (file.exists()) {
-                file.delete();
-            }
-        } catch (Exception e) {
-            Log.d("Paul","Some error happened?");
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
         }
 
+        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void cardViewListener(int position) {
+        if(mViewPager.getCurrentItem() == FILE_MANAGER_FRAGMENT)
+            ((FileManagerFragment) mSectionsPagerAdapter.fragments[FILE_MANAGER_FRAGMENT]).cardViewListener(position);
+
+        if(mViewPager.getCurrentItem() == VOICE_NOTE_FRAGMENT)
+            ((VoiceNoteFragment) mSectionsPagerAdapter.fragments[VOICE_NOTE_FRAGMENT]).cardViewListener(position);
+    }
+
+    public boolean getPermission(){
+        return VoiceNoteFragment.verifyStoragePermissions(this);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            return rootView;
+        }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        private Fragment[] fragments = new Fragment[getCount()];
+
+
+        private SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+
+            switch(position){
+                case 0: fragments[position] = VoiceNoteFragment.newInstance();
+                    return fragments[position];
+
+                case 1: fragments[position] = FileManagerFragment.newInstance();
+                    return fragments[position];
+
+                default: return PlaceholderFragment.newInstance(position + 1);
+            }
+
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Voice Notes";
+                case 1:
+                    return "Images";
+                case 2:
+                    return "SECTION 3";
+            }
+            return null;
+        }
+    }
 }

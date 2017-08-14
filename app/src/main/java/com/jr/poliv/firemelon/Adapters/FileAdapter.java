@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.jr.poliv.firemelon.MainActivity;
+import com.jr.poliv.firemelon.VoiceNoteFragment;
 import com.jr.poliv.firemelon.R;
 import com.squareup.picasso.Picasso;
 import java.io.File;
@@ -28,7 +28,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
     public FileAdapter(Context context, ArrayList<File> filesArrayList) {
         this.filesArrayList = filesArrayList;
-        MainActivity.verifyStoragePermissions((Activity) context);
+        VoiceNoteFragment.verifyStoragePermissions((Activity) context);
         try{
             cvListener = (CardViewListener) context;
         }catch(ClassCastException e){

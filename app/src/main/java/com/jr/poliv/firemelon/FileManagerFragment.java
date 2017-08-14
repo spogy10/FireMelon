@@ -1,17 +1,21 @@
 package com.jr.poliv.firemelon;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.jr.poliv.firemelon.Adapters.FileAdapter;
@@ -23,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
-public class FileManager extends AppCompatActivity implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
+public class FileManagerFragment extends Fragment implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
+
+    public FileManagerFragment(){
+    }
 
     RecyclerView recycler;
     FileManagerAdapter adapter;
@@ -38,10 +45,38 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
     };
     boolean havePermission = false;
 
+    public static FileManagerFragment newInstance() {
+        return new FileManagerFragment();
+    }
+
+    @Nullable
     @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_voicenote, container, false);
+        permissionCheck();
+        if(havePermission && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Log.d("Paul", "external storage state " + Environment.getExternalStorageState());
+
+
+            recycler = (RecyclerView) rootView.findViewById(R.id.rvFile);
+
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 4);
+            recycler.setLayoutManager(gridLayoutManager);
+            adapter = new FileManagerAdapter(getActivity(), filesArrayList);
+            recycler.setAdapter(adapter);
+
+            getLoaderManager().initLoader(0, null, this);
+
+        }else{
+            Toast.makeText(getActivity(),"NO PERMISSION or MEDIA NOT MOUNTED", Toast.LENGTH_LONG).show();
+        }
+        return rootView;
+    }
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_voicenote);
         permissionCheck();
         if(havePermission && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Log.d("Paul", "external storage state " + Environment.getExternalStorageState());
@@ -59,7 +94,7 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
         }else{
             Toast.makeText(this,"NO PERMISSION or MEDIA NOT MOUNTED", Toast.LENGTH_LONG).show();
         }
-    }
+    }*/
 
     @Override
     public void cardViewListener(int position) {
@@ -74,11 +109,10 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
             directory = new File(File.separator+"storage"+File.separator+"emulated"+File.separator+"0");
             getLoaderManager().restartLoader(0, null, this);
         }else{
-            Toast.makeText(this,"CANNOT GO TO SELECTED DIRECTORY", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(),"CANNOT GO TO SELECTED DIRECTORY", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history
         if ((keyCode == KeyEvent.KEYCODE_BACK) && !backTrace.empty()) {
@@ -86,13 +120,12 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
             getLoaderManager().restartLoader(0, null, this);
             return true;
         }
-        // If it wasn't the Back key or there's no web page history, bubble up to the default
-        // system behavior (probably exit the activity)
-        return super.onKeyDown(keyCode, event);
+
+        return false;
     }
 
     private void permissionCheck(){
-        havePermission = MainActivity.verifyStoragePermissions(this);
+        havePermission = VoiceNoteFragment.verifyStoragePermissions(getActivity());
     }
 
     @Override
@@ -101,6 +134,7 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
             case REQUEST_EXTERNAL_STORAGE:{
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     havePermission = true;
+                    getActivity().recreate();
                 }else{
                     Log.d("Paul", "Permission denied");
                 }
@@ -109,9 +143,10 @@ public class FileManager extends AppCompatActivity implements FileAdapter.CardVi
     }
 
 
+
     @Override
     public Loader<ArrayList> onCreateLoader(int id, Bundle args) {
-        Loader loader = new FileAsyncTaskLoader(this, directory.listFiles(), FileAsyncTaskLoader.EVERYTHING_MODE);
+        Loader loader = new FileAsyncTaskLoader(getActivity(), directory.listFiles(), FileAsyncTaskLoader.EVERYTHING_MODE);
         return loader;
     }
 
