@@ -17,11 +17,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.jr.poliv.firemelon.Adapters.FileAdapter;
 import com.jr.poliv.firemelon.Adapters.FileManagerAdapter;
 import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;

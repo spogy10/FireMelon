@@ -3,10 +3,7 @@ package com.jr.poliv.firemelon.AsyncTaskLoaders;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 

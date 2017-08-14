@@ -46,7 +46,6 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     boolean havePermission = false;
-    boolean requestPermissionResultReceived = false;
 
     public static VoiceNoteFragment newInstance(){
         return new VoiceNoteFragment();
