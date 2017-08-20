@@ -2,6 +2,7 @@ package com.jr.poliv.firemelon;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import com.jr.poliv.firemelon.Adapters.FileAdapter;
 
 public class MainActivity extends AppCompatActivity implements FileAdapter.CardViewListener {
 
+    private static final int REQUEST_CODE_FOR_SETTINGS_INTENT = 1000;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -37,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
      */
     private ViewPager mViewPager;
     private final int VOICE_NOTE_FRAGMENT = 0;
-    private final int FILE_MANAGER_FRAGMENT = 1;
+    private final int IMAGES_FRAGMENT = 1;
+    private final int FILE_MANAGER_FRAGMENT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
 
             if (mViewPager.getCurrentItem() == VOICE_NOTE_FRAGMENT)
                 ((VoiceNoteFragment) mSectionsPagerAdapter.fragments[VOICE_NOTE_FRAGMENT]).onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (mViewPager.getCurrentItem() == IMAGES_FRAGMENT)
+                ((ImagesFragment) mSectionsPagerAdapter.fragments[IMAGES_FRAGMENT]).onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -112,10 +119,25 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_CODE_FOR_SETTINGS_INTENT);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if(requestCode == REQUEST_CODE_FOR_SETTINGS_INTENT){
+            switch (resultCode){
+                case RESULT_OK: finish(); startActivity(getIntent());
+                    break;
+                default: case RESULT_CANCELED:
+            }
+        }
     }
 
     @Override
@@ -125,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
 
         if(mViewPager.getCurrentItem() == VOICE_NOTE_FRAGMENT)
             ((VoiceNoteFragment) mSectionsPagerAdapter.fragments[VOICE_NOTE_FRAGMENT]).cardViewListener(position);
+
+        if(mViewPager.getCurrentItem() == IMAGES_FRAGMENT)
+            ((ImagesFragment) mSectionsPagerAdapter.fragments[IMAGES_FRAGMENT]).cardViewListener(position);
     }
 
     /**
@@ -184,7 +209,10 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
                 case 0: fragments[position] = VoiceNoteFragment.newInstance();
                     return fragments[position];
 
-                case 1: fragments[position] = FileManagerFragment.newInstance();
+                case 1: fragments[position] = ImagesFragment.newInstance();
+                    return fragments[position];
+
+                case 2: fragments[position] = FileManagerFragment.newInstance();
                     return fragments[position];
 
                 default: return PlaceholderFragment.newInstance(position + 1);
@@ -195,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -206,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.CardV
                 case 1:
                     return "Images";
                 case 2:
-                    return "SECTION 3";
+                    return "File Manger";
             }
             return null;
         }

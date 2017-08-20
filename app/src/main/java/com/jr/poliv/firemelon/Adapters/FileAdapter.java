@@ -70,7 +70,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
         private void  bindView(int position){
             File file = filesArrayList.get(position);
-            Picasso.with(itemView.getContext()).load(R.mipmap.dragon_fruit).into(iv);
+            Picasso.with(itemView.getContext()).load(file).placeholder(R.mipmap.dragon_fruit).error(R.mipmap.dragon_fruit).into(iv);
             tv.setText(file.getName());
             final int finalPosition = position;
             cv.setOnClickListener(new View.OnClickListener() {

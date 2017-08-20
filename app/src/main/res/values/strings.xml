@@ -5,4 +5,14 @@
     <string name="title_activity_main">Fire Melon</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="shared_preferences_file_name">File Paths</string>
+    <string name="images_file_path">images_file_path</string>
+    <string name="voice_note_file_path">voice_note_file_path</string>
+
+    <string name="title_activity_settings">Settings</string>
+    <string name="voice_note_directory">Voice Note Directory:</string>
+    <string name="images_directory">Images Directory:</string>
+    <string name="default_voice_note_directory">/storage/6C58-E107/vn archive</string>
+    <string name="default_images_directory">/storage/6C58-E107/vn archive/pab memes</string>
 </resources>

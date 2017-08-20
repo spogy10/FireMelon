@@ -9,6 +9,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/fire_melons_square"
         android:label="@string/app_name"
+
         android:roundIcon="@mipmap/fire_melons"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -22,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".DirectorySelector"></activity>
     </application>
 
 </manifest>

@@ -10,11 +10,11 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,16 +32,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
+/**
+ * Created by poliv on 8/16/2017.
+ */
 
-    public VoiceNoteFragment(){
+public class ImagesFragment extends Fragment implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
+
+    public ImagesFragment(){
     }
 
     RecyclerView recycler;
     FileAdapter adapter;
     ArrayList<File> filesArrayList = new ArrayList<>();
-    String default_file_path = File.separator+"storage"+File.separator+"6C58-E107"+File.separator+"vn archive";
-    File vnArchive;
+    String default_file_path = File.separator+"storage"+File.separator+"6C58-E107"+File.separator+"vn archive"+File.separator+"pab memes";
+    private File imagesArchive;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -49,8 +53,8 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
     };
     boolean havePermission = false;
 
-    public static VoiceNoteFragment newInstance(){
-        return new VoiceNoteFragment();
+    public static ImagesFragment newInstance(){
+        return new ImagesFragment();
     }
 
 
@@ -58,7 +62,7 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_voicenote, container, false);
-        vnArchive = getFilePathFromSharedPreference();
+        imagesArchive = getFilePathFromSharedPreference();
         permissionCheck();
         if(havePermission && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Log.d("Paul", "external storage state " + Environment.getExternalStorageState());
@@ -78,13 +82,6 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
         }
 
         return rootView;
-    }
-
-    private File getFilePathFromSharedPreference() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_preferences_file_name), Context.MODE_PRIVATE);
-
-        String file_path = preferences.getString(getString(R.string.voice_note_file_path), default_file_path);
-        return new File(file_path);
     }
 
     /*@Override
@@ -114,27 +111,14 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
 
 
     void sendToWhatsApp(File file) throws IOException {
-        InputStream stream = new FileInputStream(file);
-        File newFile = new File(Environment.getExternalStorageDirectory().getPath(), getString(R.string.temp_file_name));
-        FileOutputStream out = new FileOutputStream(newFile);
-        byte[] readData = new byte[1024*500];
-        int i = stream.read(readData);
-        while( i != -1){
-            out.write(readData, 0, i);
-            i = stream.read(readData);
-        }
-        out.flush();
-        out.close();
-        stream.close();
+
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.setType("audio/mp3");
-        intent.putExtra("FilePath", newFile.getAbsolutePath());
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(newFile.getAbsolutePath()));
+        intent.setType("image");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.getAbsolutePath()));
         intent.setPackage(getString(R.string.whatsapp_package_name));
         Log.d("Paul", getMimeType(Uri.fromFile(file)));
-        startActivityForResult(intent,1);
-        newFile.deleteOnExit();
+        startActivity(intent);
     }
 
     @Override
@@ -151,10 +135,10 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
     public String getMimeType(Uri uri) {
         String mimeType;
 
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
-                    .toString());
-            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                    fileExtension.toLowerCase());
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                .toString());
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                fileExtension.toLowerCase());
 
         mimeType = (mimeType == null)? "":mimeType;
 
@@ -199,7 +183,7 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
 
     @Override
     public Loader<ArrayList> onCreateLoader(int id, Bundle args) {
-        Loader loader = new FileAsyncTaskLoader(getActivity(), vnArchive.listFiles());
+        Loader loader = new FileAsyncTaskLoader(getActivity(), imagesArchive.listFiles());
         return loader;
     }
 
@@ -232,6 +216,13 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
             Log.d("Paul","Some error happened?");
         }
 
+    }
+
+    private File getFilePathFromSharedPreference(){
+        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.shared_preferences_file_name), Context.MODE_PRIVATE);
+
+        String file_path = preferences.getString(getString(R.string.images_file_path), default_file_path);
+        return new File(file_path);
     }
 
 }

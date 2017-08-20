@@ -71,7 +71,7 @@ public class FileManagerAdapter extends RecyclerView.Adapter<FileManagerAdapter.
         private void  bindView(int position){
             File file = filesArrayList.get(position);
             if(file.isFile())
-                Picasso.with(itemView.getContext()).load(R.mipmap.dragon_fruit).into(iv);
+                Picasso.with(itemView.getContext()).load(file).placeholder(R.mipmap.dragon_fruit).error(R.mipmap.dragon_fruit).into(iv);
             else {
                 Picasso.with(itemView.getContext()).load(R.mipmap.fire_melon).into(iv);
                 final int finalPosition = position;
