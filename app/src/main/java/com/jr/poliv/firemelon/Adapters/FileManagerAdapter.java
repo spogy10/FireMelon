@@ -74,14 +74,14 @@ public class FileManagerAdapter extends RecyclerView.Adapter<FileManagerAdapter.
                 Picasso.with(itemView.getContext()).load(file).placeholder(R.mipmap.dragon_fruit).error(R.mipmap.dragon_fruit).into(iv);
             else {
                 Picasso.with(itemView.getContext()).load(R.mipmap.fire_melon).into(iv);
-                final int finalPosition = position;
-                cv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cvListener.cardViewListener(finalPosition);
-                    }
-                });
             }
+            final int finalPosition = position;
+            cv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cvListener.cardViewListener(finalPosition);
+                }
+            });
             tv.setText(file.getName());
         }
     }

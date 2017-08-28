@@ -3,8 +3,10 @@ package com.jr.poliv.firemelon;
 import android.Manifest;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +25,8 @@ import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
+
+import static com.jr.poliv.firemelon.VoiceNoteFragment.getMimeType;
 
 
 public class FileManagerFragment extends Fragment implements FileAdapter.CardViewListener, LoaderManager.LoaderCallbacks<ArrayList> {
@@ -97,7 +101,15 @@ public class FileManagerFragment extends Fragment implements FileAdapter.CardVie
     @Override
     public void cardViewListener(int position) {
         Log.d("Paul", "Card Clicked - "+String.valueOf(position));
-        File tempFile = filesArrayList.get(position);
+        File file = filesArrayList.get(position);
+        if(file.isFile())
+            clickFile(file);
+        else
+            clickDirectory(file);
+    }
+
+    private void clickDirectory(File tempFile){
+
         if(tempFile.listFiles() != null){
             backTrace.push(directory);
             directory = tempFile;
@@ -110,6 +122,37 @@ public class FileManagerFragment extends Fragment implements FileAdapter.CardVie
             Toast.makeText(getActivity(),"CANNOT GO TO SELECTED DIRECTORY", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void clickFile(File file){
+        String type = getMimeType(Uri.fromFile(file));
+        type = (type != null && !type.equals("")) ? getGeneralType(type) : "";
+        Log.d("Paul", type);
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.fromFile(file));
+        sendIntent.setType(type);
+        try{
+            startActivity(sendIntent);
+        }catch (RuntimeException e){
+            Log.d("Paul", "Error trying to send file "+e.toString());
+            e.printStackTrace();
+        }
+
+    }
+
+    private static String getGeneralType(String s){
+        try{
+
+            return s.substring(0, s.indexOf("/")+1) + "*";
+        }catch(Exception e){
+            Log.d("Paul", "Error trying to get general type "+e.toString());
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history

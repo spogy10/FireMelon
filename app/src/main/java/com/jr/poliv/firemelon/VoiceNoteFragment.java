@@ -148,7 +148,7 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
 
     }
 
-    public String getMimeType(Uri uri) {
+    public static String getMimeType(Uri uri) {
         String mimeType;
 
             String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
