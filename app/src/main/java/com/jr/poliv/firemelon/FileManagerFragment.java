@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,9 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import com.jr.poliv.firemelon.Adapters.FileAdapter;
-import com.jr.poliv.firemelon.Adapters.FileManagerAdapter;
-import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
+
+import com.commonsware.cwac.provider.StreamProvider;
+import com.jr.poliv.firemelon.adapters.FileAdapter;
+import com.jr.poliv.firemelon.adapters.FileManagerAdapter;
+import com.jr.poliv.firemelon.asyncTaskLoaders.FileAsyncTaskLoader;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -123,21 +126,29 @@ public class FileManagerFragment extends Fragment implements FileAdapter.CardVie
         }
     }
 
-    private void clickFile(File file){
-        String type = getMimeType(Uri.fromFile(file));
-        type = (type != null && !type.equals("")) ? getGeneralType(type) : "";
-        Log.d("Paul", type);
-
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_VIEW);
-        sendIntent.setData(Uri.fromFile(file));
-        sendIntent.setType(type);
-        try{
-            startActivity(sendIntent);
-        }catch (RuntimeException e){
-            Log.d("Paul", "Error trying to send file "+e.toString());
-            e.printStackTrace();
-        }
+    private void clickFile(File file){//https://stackoverflow.com/questions/38200282/android-os-fileuriexposedexception-file-storage-emulated-0-test-txt-exposed
+//        //android.os.FileUriExposedException
+//        String type = getMimeType(Uri.fromFile(file));
+//        type = (type != null && !type.equals("")) ? getGeneralType(type) : "";
+//        Log.d("Paul", type);
+//
+//        Intent sendIntent = new Intent();
+//        sendIntent.setAction(Intent.ACTION_VIEW);
+//        //sendIntent.setData(Uri.fromFile(file));
+//        //Log.d("Paul", sendIntent.getData().toString());
+//        //sendIntent.setType(type);
+//        //sendIntent.setDataAndType(Uri.fromFile(file), type);
+//        //Uri uri = StreamProvider.getUriForFile("com.jr.poliv.firemelon.fileprovider", file);
+//        //Log.d("Paul", uri.buildUpon().toString());
+//
+//        //sendIntent.setDataAndType(uri, "image/*");// /storage/6C58-E107/vn archive/pab memes/IMG-20170413-WA0020.jpg
+//        //sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        try{
+//            startActivity(sendIntent);
+//        }catch (Exception e){
+//            Log.d("Paul", "Error trying to send file "+e.toString());
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -150,6 +161,19 @@ public class FileManagerFragment extends Fragment implements FileAdapter.CardVie
             e.printStackTrace();
         }
         return "";
+    }
+
+    private void clickImage(){
+
+
+    }
+
+    private void clickAudio(){
+
+    }
+
+    private void clickVideo(){
+
     }
 
 

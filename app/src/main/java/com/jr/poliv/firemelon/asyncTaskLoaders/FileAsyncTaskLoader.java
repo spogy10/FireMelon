@@ -1,4 +1,4 @@
-package com.jr.poliv.firemelon.AsyncTaskLoaders;
+package com.jr.poliv.firemelon.asyncTaskLoaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;

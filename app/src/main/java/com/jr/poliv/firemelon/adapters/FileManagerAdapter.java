@@ -1,4 +1,4 @@
-package com.jr.poliv.firemelon.Adapters;
+package com.jr.poliv.firemelon.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -20,17 +20,17 @@ import java.util.ArrayList;
  * Created by poliv on 8/6/2017.
  */
 
-public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
+public class FileManagerAdapter extends RecyclerView.Adapter<FileManagerAdapter.ViewHolder> {
 
-    private CardViewListener cvListener;
+    private FileAdapter.CardViewListener cvListener;
     private ArrayList<File> filesArrayList;
 
 
-    public FileAdapter(Context context, ArrayList<File> filesArrayList) {
+    public FileManagerAdapter(Context context, ArrayList<File> filesArrayList) {
         this.filesArrayList = filesArrayList;
         VoiceNoteFragment.verifyStoragePermissions((Activity) context);
         try{
-            cvListener = (CardViewListener) context;
+            cvListener = (FileAdapter.CardViewListener) context;
         }catch(ClassCastException e){
             e.printStackTrace();
             Log.d("Paul", context.getClass().getName()+" not an instance of CardViewListener. " + e.toString());
@@ -46,7 +46,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.bindView(position);
+        holder.bindView(position);
 
     }
 
@@ -70,8 +70,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
 
         private void  bindView(int position){
             File file = filesArrayList.get(position);
-            Picasso.with(itemView.getContext()).load(file).placeholder(R.mipmap.dragon_fruit).error(R.mipmap.dragon_fruit).into(iv);
-            tv.setText(file.getName());
+            if(file.isFile())
+                Picasso.with(itemView.getContext()).load(file).placeholder(R.mipmap.dragon_fruit).error(R.mipmap.dragon_fruit).into(iv);
+            else {
+                Picasso.with(itemView.getContext()).load(R.mipmap.fire_melon).into(iv);
+            }
             final int finalPosition = position;
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,12 +82,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
                     cvListener.cardViewListener(finalPosition);
                 }
             });
+            tv.setText(file.getName());
         }
     }
 
-    public interface CardViewListener{
-        void cardViewListener(int position);
-    }
+
 
 
 }

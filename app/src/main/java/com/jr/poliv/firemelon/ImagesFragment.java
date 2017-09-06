@@ -23,13 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
-import com.jr.poliv.firemelon.Adapters.FileAdapter;
-import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
+import com.jr.poliv.firemelon.adapters.FileAdapter;
+import com.jr.poliv.firemelon.asyncTaskLoaders.FileAsyncTaskLoader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**

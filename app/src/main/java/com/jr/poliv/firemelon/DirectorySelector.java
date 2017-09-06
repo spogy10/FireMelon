@@ -18,10 +18,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jr.poliv.firemelon.Adapters.FileAdapter;
-import com.jr.poliv.firemelon.Adapters.FileManagerAdapter;
-import com.jr.poliv.firemelon.AsyncTaskLoaders.FileAsyncTaskLoader;
-import com.jr.poliv.firemelon.Stack.BackStack;
+import com.jr.poliv.firemelon.adapters.FileAdapter;
+import com.jr.poliv.firemelon.adapters.FileManagerAdapter;
+import com.jr.poliv.firemelon.asyncTaskLoaders.FileAsyncTaskLoader;
+import com.jr.poliv.firemelon.stack.BackStack;
 
 import java.io.File;
 import java.util.ArrayList;

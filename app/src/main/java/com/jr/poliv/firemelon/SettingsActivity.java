@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.jr.poliv.firemelon.Stack.BackStack;
-
 public class SettingsActivity extends AppCompatActivity {
 
     boolean changesMade = false;

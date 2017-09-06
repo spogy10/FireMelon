@@ -28,6 +28,16 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DirectorySelector"></activity>
+        <provider
+            android:authorities="com.jr.poliv.firemelon.fileprovider"
+            android:name="com.commonsware.cwac.provider.StreamProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
     </application>
 
 </manifest>
