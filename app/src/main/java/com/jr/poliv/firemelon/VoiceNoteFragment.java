@@ -40,7 +40,7 @@ public class VoiceNoteFragment extends Fragment implements FileAdapter.CardViewL
     RecyclerView recycler;
     FileAdapter adapter;
     ArrayList<File> filesArrayList = new ArrayList<>();
-    String default_file_path = File.separator+"storage"+File.separator+"6C58-E107"+File.separator+"vn archive";
+    String default_file_path = File.separator+"storage"+File.separator+"5077-14E8"+File.separator+"vn archive";
     File vnArchive;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {

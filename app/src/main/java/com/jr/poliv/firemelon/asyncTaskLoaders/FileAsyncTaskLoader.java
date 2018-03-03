@@ -2,6 +2,8 @@ package com.jr.poliv.firemelon.asyncTaskLoaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.util.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
